@@ -24,7 +24,9 @@ void MeshGame::initialize()
     _scene = Scene::load("res/mesh.scene");
 
     // Get the duck node
-    _modelNode = _scene->findNode("duck");
+	_modelNode = _scene->findNode("duck");
+
+	_scene = Scene::load("res/room1.scene");
 
     // Find the light node
     Node* lightNode = _scene->findNode("directionalLight1");
@@ -37,7 +39,7 @@ void MeshGame::initialize()
     _scene->getActiveCamera()->setAspectRatio(getAspectRatio());
 
     // Create the grid and add it to the scene.
-    Model* model = createGridModel();
+    Model *model = createGridModel();
     _scene->addNode("grid")->setModel(model);
     model->release();
 }
