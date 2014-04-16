@@ -1,6 +1,9 @@
 material textured
 {
     u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
+	u_worldViewMatrix = WORLD_VIEW_MATRIX
+	u_inverseTransposeWorldViewMatrix = INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX
+	u_ambientColor = 0.01, 0.01, 0.01
     
     sampler u_diffuseTexture
     {
@@ -29,30 +32,24 @@ material textured
 
 material door : textured
 {
-    u_ambientColor = 0.588235, 0.588235, 0.588235
-    u_specularExponent = 2
-    
     sampler u_diffuseTexture
     {
         path = res/yohan/simple-room.fbm/door.png
-        wrapS = REPEAT
-        wrapT = REPEAT
     }
 
     technique
     {
         pass 
         {
-            defines = SPECULAR
+            defines = POINT_LIGHT_COUNT 1
         }
     }
 }
 
 material floor : textured
 {
-    u_specularExponent = 2
-    u_textureRepeat = 4, 4
-    
+	u_textureRepeat = 4, 4
+	
     sampler u_diffuseTexture
     {
         path = res/yohan/simple-room.fbm/oldstoneroad.png
@@ -64,25 +61,13 @@ material floor : textured
     {
         pass 
         {
-            defines = TEXTURE_REPEAT
+            defines = TEXTURE_REPEAT;POINT_LIGHT_COUNT 1
         }
     }
 }
 
 material wall : textured
-{
-            // shaders
-            vertexShader = res/shaders/textured.vert
-            fragmentShader = res/shaders/textured.frag
-			defines = TEXTURE_REPEAT;POINT_LIGHT_COUNT 1
-            
-	// uniforms
-	u_worldViewMatrix = WORLD_VIEW_MATRIX
-	u_inverseTransposeWorldViewMatrix = INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX
-    //u_ambientColor = 0.588235, 0.588235, 0.588235
-    u_cameraPosition = CAMERA_WORLD_POSITION
-    u_inverseTransposeWorldViewMatrix = INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX
-    u_specularExponent = 2
+{           
     u_textureRepeat = 2.4, 2.4
     
     sampler u_diffuseTexture

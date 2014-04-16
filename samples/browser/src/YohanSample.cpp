@@ -18,19 +18,29 @@ Model * loadModel(const char *path, const char *id)
 	return model;
 }
 
-Node * Node3dsmax(Scene *rootScene, Model *model, const char *id = 0)
+void applyLight(Scene *scene, Node *lightNode, const char *nodeId)
 {
-	Node *node = Node::create();
-	node->setModel(model);
-	node->scale(0.01f);
-	node->rotateX(-MATH_PIOVER2);
-
-	Node *main = rootScene->addNode(id);
-	main->addChild(node);
-
-	node->release();
-
-	return main;
+	Node *node = scene->findNode(nodeId);
+	if (node)
+	{
+		Model *model = node->getModel();
+		if (model)
+		{
+			if (model->getMeshPartCount())
+			{
+				for (int i = 0; i < model->getMeshPartCount(); i++)
+				{
+					Material *mat= model->getMaterial(i);
+					if (mat)
+					{
+						mat->getTechnique()->getParameter("u_pointLightColor[0]")->setValue(Vector3::one());
+						mat->getTechnique()->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
+						mat->getTechnique()->getParameter("u_pointLightRangeInverse[0]")->setValue(lightNode->getLight()->getRangeInverse());
+					}
+				}
+			}
+		}
+	}
 }
 
 YohanSample::YohanSample()
@@ -57,7 +67,7 @@ void YohanSample::initialize()
 	enableScriptCamera(true);
 	setScriptCameraSpeed(1.5f, 3.5f);
 
-	Light* pointLight = Light::createPoint(Vector3::one(), 2.0f);
+	Light* pointLight = Light::createPoint(Vector3::one(), 15.0f);
 	Node *lightNode = Node::create("pointLight");
 	lightNode->setLight(pointLight);
 	SAFE_RELEASE(pointLight);
@@ -78,13 +88,9 @@ void YohanSample::initialize()
 	//floor->release();
 
 	//initializing point light
-	Model *wall = _scene->findNode("wall")->getModel();
-	Material *lightMaterial = wall->getMaterial(0);
-
-	lightMaterial->getTechnique()->getParameter("u_ambientColor")->setValue(Vector3(0.0f, 0.0f, 0.0f));
-	lightMaterial->getTechnique()->getParameter("u_pointLightColor[0]")->setValue(Vector3::one());
-	lightMaterial->getTechnique()->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
-	lightMaterial->getTechnique()->getParameter("u_pointLightRangeInverse[0]")->setValue(lightNode->getLight()->getRangeInverse());
+	applyLight(_scene, lightNode, "wall");
+	applyLight(_scene, lightNode, "floor");
+	applyLight(_scene, lightNode, "door");
 
 	SAFE_RELEASE(lightNode);
 
