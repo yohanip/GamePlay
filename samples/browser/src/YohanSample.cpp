@@ -44,33 +44,49 @@ void YohanSample::initialize()
     _font = Font::create("res/ui/arial.gpb");
 
     // Create an empty scene.
-    _scene = Scene::create();
+    _scene = Scene::load("res/yohan/simple-room.gpb");
 
     // Create a camera and add it to the scene as the active camera.
     Camera* camera = Camera::createPerspective(45.0f, getAspectRatio(), 0.3f, 200.f);
     Node* cameraNode = _scene->addNode("camera");
     cameraNode->setCamera(camera);
     _scene->setActiveCamera(camera);
-    cameraNode->translate(0, 10.f, 0);
-	cameraNode->rotateX(-MATH_PIOVER2);
+    cameraNode->translate(0, 0, 10);
     SAFE_RELEASE(camera);
 
 	enableScriptCamera(true);
 	setScriptCameraSpeed(1.5f, 3.5f);
 
-	//room1 model
-	Model *room = loadModel("res/yohan/room1.gpb", "room1");
-	room->setMaterial("res/yohan/room1.material#wall");
+	Light* pointLight = Light::createPoint(Vector3::one(), 2.0f);
+	Node *lightNode = Node::create("pointLight");
+	lightNode->setLight(pointLight);
+	SAFE_RELEASE(pointLight);
 
-	Node3dsmax(_scene, room, "room1");
-	room->release();
+	cameraNode->addChild(lightNode);
+	//room1 model
+	//Model *room = loadModel("res/yohan/room1.gpb", "room1");
+	//room->setMaterial("res/yohan/room1.material#wall");
+
+	//Node3dsmax(_scene, room, "room1");
+	//room->release();
 
 	//floor model
-	Model *floor = loadModel("res/yohan/floor.gpb", "floor");
-	floor->setMaterial("res/yohan/floor.material#floor")->getParameter("u_textureRepeat")->setVector2(Vector2(20, 10));
+	//Model *floor = loadModel("res/yohan/floor.gpb", "floor");
+	//floor->setMaterial("res/yohan/floor.material#floor")->getParameter("u_textureRepeat")->setVector2(Vector2(20, 10));
 	
-	Node3dsmax(_scene, floor)->scale(10.f);
-	floor->release();
+	//Node3dsmax(_scene, floor)->scale(10.f);
+	//floor->release();
+
+	//initializing point light
+	Model *wall = _scene->findNode("wall")->getModel();
+	Material *lightMaterial = wall->getMaterial(0);
+
+	lightMaterial->getTechnique()->getParameter("u_ambientColor")->setValue(Vector3(0.0f, 0.0f, 0.0f));
+	lightMaterial->getTechnique()->getParameter("u_pointLightColor[0]")->setValue(Vector3::one());
+	lightMaterial->getTechnique()->getParameter("u_pointLightPosition[0]")->bindValue(lightNode, &Node::getTranslationView);
+	lightMaterial->getTechnique()->getParameter("u_pointLightRangeInverse[0]")->setValue(lightNode->getLight()->getRangeInverse());
+
+	SAFE_RELEASE(lightNode);
 
     const float fontSize = _font->getSize();
     const float cubeSize = 10.0f;
@@ -91,7 +107,7 @@ void YohanSample::finalize()
 
 void YohanSample::update(float elapsedTime)
 {
-	_scene->findNode("room1")->rotateY(elapsedTime / 1000.f * MATH_DEG_TO_RAD(5.f));
+	//_scene->findNode("room1")->rotateY(elapsedTime / 1000.f * MATH_DEG_TO_RAD(5.f));
 }
 
 void YohanSample::render(float elapsedTime)
