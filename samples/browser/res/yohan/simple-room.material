@@ -1,0 +1,103 @@
+material textured
+{
+    u_worldViewProjectionMatrix = WORLD_VIEW_PROJECTION_MATRIX
+    
+    sampler u_diffuseTexture
+    {
+        mipmap = true
+        wrapS = CLAMP
+        wrapT = CLAMP
+        minFilter = LINEAR_MIPMAP_LINEAR
+        magFilter = LINEAR
+    }
+
+    renderState
+    {
+        cullFace = true
+        depthTest = true
+    }
+    
+    technique
+    {
+        pass 
+        {
+            vertexShader = res/shaders/textured.vert
+            fragmentShader = res/shaders/textured.frag
+        }
+    }
+}
+
+material door : textured
+{
+    u_ambientColor = 0.588235, 0.588235, 0.588235
+    u_specularExponent = 2
+    
+    sampler u_diffuseTexture
+    {
+        path = res/yohan/simple-room.fbm/door.png
+        wrapS = REPEAT
+        wrapT = REPEAT
+    }
+
+    technique
+    {
+        pass 
+        {
+            defines = SPECULAR
+        }
+    }
+}
+
+material floor : textured
+{
+    u_specularExponent = 2
+    u_textureRepeat = 4, 4
+    
+    sampler u_diffuseTexture
+    {
+        path = res/yohan/simple-room.fbm/oldstoneroad.png
+        wrapS = REPEAT
+        wrapT = REPEAT
+    }
+
+    technique
+    {
+        pass 
+        {
+            defines = TEXTURE_REPEAT
+        }
+    }
+}
+
+material wall : textured
+{
+            // shaders
+            vertexShader = res/shaders/textured.vert
+            fragmentShader = res/shaders/textured.frag
+			defines = TEXTURE_REPEAT;POINT_LIGHT_COUNT 1
+            
+	// uniforms
+	u_worldViewMatrix = WORLD_VIEW_MATRIX
+	u_inverseTransposeWorldViewMatrix = INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX
+    //u_ambientColor = 0.588235, 0.588235, 0.588235
+    u_cameraPosition = CAMERA_WORLD_POSITION
+    u_inverseTransposeWorldViewMatrix = INVERSE_TRANSPOSE_WORLD_VIEW_MATRIX
+    u_specularExponent = 2
+    u_textureRepeat = 2.4, 2.4
+    
+    sampler u_diffuseTexture
+    {
+        path = res/yohan/simple-room.fbm/Concrete.Precast Structural Concrete.Smooth.png
+        wrapS = REPEAT
+        wrapT = REPEAT
+    }
+
+    technique
+    {
+        pass 
+        {
+            defines = TEXTURE_REPEAT;POINT_LIGHT_COUNT 1
+        }
+    }
+}
+
