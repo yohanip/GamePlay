@@ -62,9 +62,10 @@ function camera_update(elapsedTime)
 
         -- Forward motion
         if _moveFlags[MOVE_FORWARD] then
-            char:setForwardVelocity(speed)
-        elseif _moveFlags[MOVE_BACKWARD] then
+			-- yohan: bullet's forward velocity is not -1? 
             char:setForwardVelocity(-speed)
+        elseif _moveFlags[MOVE_BACKWARD] then
+            char:setForwardVelocity(speed)
         else
             char:setForwardVelocity(0)
         end
