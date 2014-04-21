@@ -28,7 +28,7 @@ void applyLight(Scene *scene, Node *lightNode, const char *nodeId)
 		{
 			if (model->getMeshPartCount())
 			{
-				for (int i = 0; i < model->getMeshPartCount(); i++)
+				for (int i = 0; i < (int)model->getMeshPartCount(); i++)
 				{
 					Material *mat= model->getMaterial(i);
 					if (mat)
@@ -83,7 +83,57 @@ void YohanSample::initialize()
     _font = Font::create("res/ui/arial.gpb");
 
     // Create an empty scene.
+	_scene = Scene::create();
+	/*
     _scene = Scene::load("res/yohan/simple-room.gpb");
+
+	Node *newDoor = _scene->findNode("door")->clone();
+	_scene->addNode(newDoor);
+	newDoor->translate(0, 3, 0);
+	newDoor->release();
+	*/
+	Bundle *bundle = Bundle::create("res/yohan/simple-room.gpb");
+
+	for (int i = 0; i < bundle->getObjectCount(); i++)
+		Logger::log(Logger::LEVEL_INFO, "%s\n", bundle->getObjectId(i));
+
+	Mesh *mesh;
+	Model *model;
+	Node *node;
+
+	mesh = bundle->loadMesh("door_Mesh");
+	model = Model::create(mesh);
+	mesh->release();
+	model->setMaterial("res/yohan/simple-room.material#door");
+	node = Node::create("door");
+	node->setModel(model);
+	model->release();
+
+	//Node *node = bundle->loadNode("door");
+	_scene->addNode(node);
+	//node->translate(0, 6, 0);
+	node->release();
+
+	mesh = bundle->loadMesh("wall_Mesh");
+	model = Model::create(mesh);
+	mesh->release();
+	model->setMaterial("res/yohan/simple-room.material#wall");
+	node = Node::create("wall");
+	node->setModel(model);
+	model->release();
+
+	//Node *node = bundle->loadNode("door");
+	_scene->addNode(node);
+	//node->translate(0, 6, 0);
+	node->release();
+
+	//node = bundle->loadNode("wall");
+	//_scene->addNode(node);
+	//node->translate(0, 6, 0);
+	//node->release();
+
+	//releasing loader?..
+	SAFE_RELEASE(bundle);
 
 	/*
 	Mesh *mesh = _scene->findNode("door")->getModel()->getMesh();
@@ -149,6 +199,7 @@ void YohanSample::initialize()
 	rbParams.angularDamping = 0.16f;
 	floorCollisionNode->setCollisionObject(PhysicsCollisionObject::RIGID_BODY, PhysicsCollisionShape::box(Vector3(300.f, 1.0f, 300.f)), &rbParams);
 
+	/*
 	//collision object for the door
 	applyDoorCollision(_scene->findNode("door"));
 	//collision for the room
@@ -167,11 +218,7 @@ void YohanSample::initialize()
 	Animation *anim = doorNode->createAnimationFromTo("open_door", Transform::ANIMATE_ROTATE, from, to, Curve::SMOOTH, 500);
 	doorNode->setTag("isDoor", "1");
 	anim->play();
-
-	Node *newDoor = _scene->findNode("door")->clone();
-	_scene->addNode(newDoor);
-	newDoor->translate(0, 3, 0);
-	newDoor->release();
+	*/
 
 	//room1 model
 	//Model *room = loadModel("res/yohan/room1.gpb", "room1");
@@ -188,15 +235,11 @@ void YohanSample::initialize()
 	//floor->release();
 
 	//initializing point light
-	applyLight(_scene, lightNode, "wall");
-	applyLight(_scene, lightNode, "floor");
+	//applyLight(_scene, lightNode, "wall");
+	//applyLight(_scene, lightNode, "floor");
 	applyLight(_scene, lightNode, "door");
 
 	SAFE_RELEASE(lightNode);
-
-    const float fontSize = _font->getSize();
-    const float cubeSize = 10.0f;
-    float x, y, textWidth;
 }
 
 void YohanSample::finalize()
